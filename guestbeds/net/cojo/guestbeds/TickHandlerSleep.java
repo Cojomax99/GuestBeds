@@ -2,6 +2,7 @@ package guestbeds.net.cojo.guestbeds;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,6 +56,25 @@ public class TickHandlerSleep implements ITickHandler {
 			WorldServer world = (WorldServer)obj;
 			// Are all players in the last stage of sleep?
 			this.areAllPlayersAsleep = world.areAllPlayersAsleep();
+
+			updatePlayerMap(world);
+		}
+	}
+
+	/**
+	 * Update the player map, removing stale players (players who are no longer in a guest bed)
+	 * @param world World instance
+	 */
+	private static void updatePlayerMap(WorldServer world) {
+		Iterator<Integer> keys = playerCoordsMap.keySet().iterator(); 
+
+		while (keys.hasNext()) {
+			Entity player = world.getEntityByID(keys.next());
+			
+			// If player is not in guest bed, remove them from the map
+			if (world.getBlockId((int)player.posX, (int)player.posY, (int)player.posZ) != GuestBedsMod.bedBlockID) {
+				playerCoordsMap.remove(player.entityId);
+			}
 		}
 	}
 
