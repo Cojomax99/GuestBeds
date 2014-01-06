@@ -54,7 +54,7 @@ public class BlockGuestBed extends BlockBed {
 		// When the block is first activated, save off the coordinates
 		if (!par1World.isRemote) {
 			TickHandlerSleep.saveCoords(player.entityId, player.getBedLocation(player.dimension));
-			//player.addChatMessage("Saving spawn data for player " + player.username);
+			//player.addChatMessage("Saving spawn data for player " + player.username + " " + player.entityId);
 		}
 		
 		return super.onBlockActivated(par1World, par2, par3, par4, player, par6, par7, par8, par9);

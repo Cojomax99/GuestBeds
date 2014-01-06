@@ -7,6 +7,7 @@ import java.util.Iterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -38,8 +39,7 @@ public class TickHandlerSleep implements ITickHandler {
 	}
 
 	@Override
-	public EnumSet<TickType> ticks()
-	{
+	public EnumSet<TickType> ticks() {
 		return EnumSet.of(TickType.WORLD);
 	}
 
@@ -56,7 +56,7 @@ public class TickHandlerSleep implements ITickHandler {
 			WorldServer world = (WorldServer)obj;
 			// Are all players in the last stage of sleep?
 			this.areAllPlayersAsleep = world.areAllPlayersAsleep();
-
+			
 			updatePlayerMap(world);
 		}
 	}
@@ -71,9 +71,14 @@ public class TickHandlerSleep implements ITickHandler {
 		while (keys.hasNext()) {
 			Entity player = world.getEntityByID(keys.next());
 			
+			if (player == null)
+				continue;
+			
 			// If player is not in guest bed, remove them from the map
-			if (world.getBlockId((int)player.posX, (int)player.posY, (int)player.posZ) != GuestBedsMod.bedBlockID) {
+			if (world.getBlockId(MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY),
+					MathHelper.floor_double(player.posZ)) != GuestBedsMod.bedBlockID) {
 				playerCoordsMap.remove(player.entityId);
+				//((EntityPlayer)player).addChatMessage("Removing data for player" + ((EntityPlayer)player).username);
 			}
 		}
 	}
@@ -114,7 +119,7 @@ public class TickHandlerSleep implements ITickHandler {
 						EntityPlayer player = (EntityPlayer)e;
 						player.setSpawnChunk(loadCoords(player), false);
 						playerCoordsMap.remove(player.entityId);
-						//	player.addChatMessage("Restoring spawn data for player " + player.username);
+						//player.addChatMessage("Restoring spawn data for player " + player.username);
 					}
 				}
 			}
